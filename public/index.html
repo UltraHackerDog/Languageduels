@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Duels</title>
+    <link rel="icon" type="image/png" href="../assets/logo.png"/>
+    <link rel="stylesheet" href="style.css">
+      
+</head>
+<body>
+    <h1 class="top-title">Language Duels</h1>
+    <h2 class="top-sub-heading">Making Language Learning Fun</h2>
+    <div class="main-game-container"> 
+        
+        <label for="level-selector"> What is your english level?:</label>
+        <select name="Your English Level" id="level-selector" class="level-selector">
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+        </select>
+        <div>
+            <label for="select-lang">Select Language To Translate Into English:</label>
+            <select id="select-lang">
+              <option value="DE">German</option>
+            </select>
+          </div>
+          <button type="button" onclick="englishTextGenerator()" class="english-button">Submit</button>
+        
+        <div id="translate-text-field" class="translate-text-field" style="display: none;"></div>
+        <button type="button" id="start-button"onclick="showTranslationField()" style="display: none;";> Start Translating!</button>
+        <p class="timer" id="timer" style="display: none;"></p>
+        <form id="form-input">
+            <label id="label"for="translate-input-field" style="display: none;">Translate the text below:</label>
+            <textarea name="translation" rows="10" cols="10" class="translate-input-field" id="translate-input-field" style="display: none;"></textarea>
+            <input id="submit" type="submit" value="Submit" style="display: none;" onclick="compareTranslations()">
+        </form>
+
+           
+    
+    </div>
+    
+    <script type="module" src="./client-bundle.js"></script>
+
+</body>
+</html>
