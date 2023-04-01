@@ -90,15 +90,14 @@
   var apiKeyDeepL = process.env.DEEPL_API_KEY;
   var apiKeyGoogle = process.env.GOOGLE_API_KEY;
   async function getDeepLTranslation(text) {
-    const url = `http://localhost:3000/translate/deepl`;
+    const url = `/translate/deepl`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        text,
-        targetLanguage: "EN"
+        text
       })
     });
     const data = await response.json();
@@ -109,15 +108,14 @@
     }
   }
   async function getGoogleTranslation(text) {
-    const url = `http://localhost:3000/translate/google`;
+    const url = `/translate/google`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        text,
-        targetLanguage: "en"
+        text
       })
     });
     const data = await response.json();

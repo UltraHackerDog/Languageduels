@@ -2,51 +2,49 @@ const apiKeyDeepL = process.env.DEEPL_API_KEY;
 const apiKeyGoogle = process.env.GOOGLE_API_KEY;
 
   
-    async function getDeepLTranslation(text) {
-    const url = `http://localhost:3000/translate/deepl`;
-  
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: text,
-        targetLanguage: 'EN',
-      }),
-    });
-  
-    const data = await response.json();
-  
-    if (data && data.translations && data.translations.length > 0) {
-      return data.translations[0].text;
-    } else {
-      throw new Error('Error in DeepL translation.');
-    }
-    }
-  
-    async function getGoogleTranslation(text) {
-    const url = `http://localhost:3000/translate/google`;
-  
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: text,
-        targetLanguage: 'en',
-      }),
-    });
-  
-    const data = await response.json();
-  
-    if (data && data.translations && data.translations.length > 0) {
-      return data.translations[0].translatedText;
-    } else {
-      throw new Error('Error in Google Cloud Translation.');
-    }
+async function getDeepLTranslation(text) {
+  const url = `/translate/deepl`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: text,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (data && data.translations && data.translations.length > 0) {
+    return data.translations[0].text;
+  } else {
+    throw new Error('Error in DeepL translation.');
   }
+}
+
+async function getGoogleTranslation(text) {
+  const url = `/translate/google`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: text,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (data && data.translations && data.translations.length > 0) {
+    return data.translations[0].translatedText;
+  } else {
+    throw new Error('Error in Google Cloud Translation.');
+  }
+}
     async function loadUSEModel() {
         const model = await use.load();
         return model;

@@ -26892,18 +26892,25 @@ var helmet = require_cjs();
 var app = express();
 app.use(express.json());
 var cors = require_lib3();
-app.use(cors({
-  origin: "http://localhost:3000",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
-}));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 var DEEPL_API_KEY = process.env.DEEPL_API_KEY;
 var GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 app.post("/translate/deepl", async (req, res) => {
-  const { text, targetLanguage } = req.body;
+  const { text } = req.body;
+  const apiKey = DEEPL_API_KEY;
   try {
     const response = await axios.post(
-      `https://api.deepl.com/v2/translate?auth_key=${DEEPL_API_KEY}&text=${encodeURIComponent(text)}&target_lang=${targetLanguage}`
+      `https://api-free.deepl.com/v2/translate?auth_key=${DEEPL_API_KEY}&text=${encodeURIComponent(text)}&target_lang=${targetLanguage}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
     );
     res.json(response.data);
   } catch (error) {
@@ -26911,13 +26918,14 @@ app.post("/translate/deepl", async (req, res) => {
   }
 });
 app.post("/translate/google", async (req, res) => {
-  const { text, targetLanguage } = req.body;
+  const { text } = req.body;
+  const apiKey = GOOGLE_API_KEY;
   try {
     const response = await axios.post(
-      `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_API_KEY}`,
+      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
       {
         q: text,
-        target: targetLanguage
+        target: "en"
       }
     );
     res.json(response.data);
