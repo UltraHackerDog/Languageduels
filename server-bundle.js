@@ -26853,13 +26853,13 @@ var require_lib3 = __commonJS({
             if (err) {
               next(err);
             } else {
-              var corsOptions = assign({}, defaults, options);
+              var corsOptions2 = assign({}, defaults, options);
               var originCallback = null;
-              if (corsOptions.origin && typeof corsOptions.origin === "function") {
-                originCallback = corsOptions.origin;
-              } else if (corsOptions.origin) {
+              if (corsOptions2.origin && typeof corsOptions2.origin === "function") {
+                originCallback = corsOptions2.origin;
+              } else if (corsOptions2.origin) {
                 originCallback = function(origin, cb) {
-                  cb(null, corsOptions.origin);
+                  cb(null, corsOptions2.origin);
                 };
               }
               if (originCallback) {
@@ -26867,8 +26867,8 @@ var require_lib3 = __commonJS({
                   if (err2 || !origin) {
                     next(err2);
                   } else {
-                    corsOptions.origin = origin;
-                    cors2(corsOptions, req, res, next);
+                    corsOptions2.origin = origin;
+                    cors2(corsOptions2, req, res, next);
                   }
                 });
               } else {
@@ -26892,11 +26892,11 @@ var helmet = require_cjs();
 var app = express();
 app.use(express.json());
 var cors = require_lib3();
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+var corsOptions = {
+  origin: "http://localhost:3001",
+  methods: ["GET", "POST"]
+};
+app.use(cors(corsOptions));
 var DEEPL_API_KEY = process.env.DEEPL_API_KEY;
 var GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 app.post("/translate/deepl", async (req, res) => {
@@ -26933,7 +26933,7 @@ app.post("/translate/google", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-var PORT = process.env.PORT || 3e3;
+var PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

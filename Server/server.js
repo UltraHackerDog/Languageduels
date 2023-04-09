@@ -8,12 +8,13 @@ const app = express();
 app.use(express.json());
 
 const cors = require('cors');
+const corsOptions = {
+  origin: "http://localhost:3001",
+  methods: ["GET", "POST"],
+};
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+app.use(cors(corsOptions));
+
 
 const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
@@ -55,7 +56,7 @@ app.post('/translate/google', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

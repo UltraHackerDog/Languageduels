@@ -90,7 +90,7 @@
   var apiKeyDeepL = process.env.DEEPL_API_KEY;
   var apiKeyGoogle = process.env.GOOGLE_API_KEY;
   async function getDeepLTranslation(text) {
-    const url = `/translate/deepl`;
+    const url = `http://localhost:3001/translate/deepl`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -100,6 +100,7 @@
         text
       })
     });
+    console.log("DeepL request:", { url, ...requestOptions });
     const data = await response.json();
     if (data && data.translations && data.translations.length > 0) {
       return data.translations[0].text;
@@ -108,7 +109,7 @@
     }
   }
   async function getGoogleTranslation(text) {
-    const url = `/translate/google`;
+    const url = `http://localhost:3001/translate/google`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -118,6 +119,7 @@
         text
       })
     });
+    console.log("Google request:", { url, ...requestOptions });
     const data = await response.json();
     if (data && data.translations && data.translations.length > 0) {
       return data.translations[0].translatedText;
@@ -141,8 +143,11 @@
   }
   async function score(userTranslation, text) {
     try {
+      console.log("Scoring function started");
       const deeplTranslation = await getDeepLTranslation(text, apiKeyDeepL);
+      console.log("DeepL translation:", deeplTranslation);
       const googleTranslation = await getGoogleTranslation(text, apiKeyGoogle);
+      console.log("Google translation:", googleTranslation);
       const model = await loadUSEModel();
       const embeddings = await getUSEEmbeddings([userTranslation, deeplTranslation, googleTranslation], model);
       const userEmbedding = embeddings.slice([0, 0], [1, -1]);
