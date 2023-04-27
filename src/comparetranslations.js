@@ -5,6 +5,8 @@ const apiKeyGoogle = process.env.GOOGLE_API_KEY;
 async function getDeepLTranslation(text) {
   const url = `http://localhost:3001/translate/deepl`;
 
+  console.log('getDeepLTranslation: URL:', url);
+
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -30,6 +32,10 @@ async function getDeepLTranslation(text) {
 async function getGoogleTranslation(text) {
   const url = `http://localhost:3001/translate/google`;
 
+  console.log('getGoogleTranslation: URL:', url);
+
+
+  
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -71,12 +77,27 @@ async function getGoogleTranslation(text) {
         try {
           console.log('Scoring function started');
       
-          const deeplTranslation = await getDeepLTranslation(text, apiKeyDeepL);
-          console.log('DeepL translation:', deeplTranslation);
-          const googleTranslation = await getGoogleTranslation(text, apiKeyGoogle);
-          console.log('Google translation:', googleTranslation);
+          let deeplTranslation;
+          try {
+            deeplTranslation = await getDeepLTranslation(text, apiKeyDeepL);
+            console.log('score: deeplTranslation:', deeplTranslation);
+          } catch (deeplError) {
+            console.error('Error in DeepL translation:', deeplError);
+          }
 
-      
+          let googleTranslation;
+          try {
+            googleTranslation = await getGoogleTranslation(text, apiKeyGoogle);
+            console.log('score: googleTranslation:', googleTranslation);
+          } catch (googleError) {
+            console.error('Error in Google Cloud Translation:', googleError);
+          }
+
+          // Check if both translations failed
+          if (!deeplTranslation && !googleTranslation) {
+            throw new Error('Both translation services failed.');
+          }
+
           const model = await loadUSEModel();
           const embeddings = await getUSEEmbeddings([userTranslation, deeplTranslation, googleTranslation], model);
       
@@ -105,6 +126,10 @@ async function getGoogleTranslation(text) {
         const originalText = textField.innerText;
         const userTranslation = inputField.value;
       
+        
+        console.log('compareTranslations: originalText:', originalText);
+        console.log('compareTranslations: userTranslation:', userTranslation);
+
         const accuracyScore = await score(userTranslation, originalText);
       
         // Display the accuracy score

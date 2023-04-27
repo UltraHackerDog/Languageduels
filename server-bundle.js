@@ -26900,6 +26900,7 @@ app.use(cors(corsOptions));
 var DEEPL_API_KEY = process.env.DEEPL_API_KEY;
 var GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 app.post("/translate/deepl", async (req, res) => {
+  console.log("POST /translate/deepl");
   const { text } = req.body;
   const apiKey = DEEPL_API_KEY;
   try {
@@ -26912,8 +26913,10 @@ app.post("/translate/deepl", async (req, res) => {
         }
       }
     );
+    console.log("DeepL response:", response.data);
     res.json(response.data);
   } catch (error) {
+    console.error("Error in DeepL API request:", error);
     res.status(500).json({ error: error.message });
   }
 });
