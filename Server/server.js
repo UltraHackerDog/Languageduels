@@ -3,62 +3,63 @@ const path = require('path');
 const express = require('express');
 const axios = require('axios');
 const helmet = require('helmet');
+const {Translate} = require('@google-cloud/translate').v2;
 
 const app = express();
 app.use(express.json());
 
 const cors = require('cors');
-const corsOptions = {
-  origin: "http://localhost:3001",
-  methods: ["GET", "POST"],
-};
 
-app.use(cors(corsOptions));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 
 const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
-app.post('/translate/deepl', async (req, res) => {
-  console.log('POST /translate/deepl');
-  const { text } = req.body;
-  const apiKey = DEEPL_API_KEY;
+const apiUrl = 'https://api-free.deepl.com/v2/translate';
 
-  try {
-    const response = await axios.post(
-      `https://api-free.deepl.com/v2/translate?auth_key=${DEEPL_API_KEY}&text=${encodeURIComponent(text)}&target_lang=${targetLanguage}`,
-      {},
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-    );
-    console.log('DeepL response:', response.data);
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error in DeepL API request:', error);
-    res.status(500).json({ error: error.message });
-  }
+app.post('/translate/deepl', async (req, res) => {
+    const text = req.body.text;
+    const targetLang = req.body.target;
+    
+    try {
+        const response = await axios.post(apiUrl, {
+            auth_key: DEEPL_API_KEY,
+            text: text,
+            target_lang: targetLang,
+        });
+        
+        const translation = response.data.translations[0].text;
+        
+        res.json({ translation });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
+
+const translate = new Translate({
+    projectId: 'tidal-pathway-381014',
+    keyFilename: '../google-cloud-creditials.json',
 });
 
 app.post('/translate/google', async (req, res) => {
-  const { text } = req.body;
-  const apiKey = GOOGLE_API_KEY;
-
-  try {
-    const response = await axios.post(
-      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
-      {
-        q: text,
-        target: 'en',
-      }
-    );
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    const text = req.body.text;
+    const target = req.body.target;
+    
+    try {
+        const [translation] = await translate.translate(text, target);
+        res.json({ translation });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
 });
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
